@@ -26,3 +26,7 @@ data class Product (
     @SerialName("CT_OM")
     val categorie: String
 )
+
+data class ProductenUIState(
+    val data: List<Product> = listOf()
+)

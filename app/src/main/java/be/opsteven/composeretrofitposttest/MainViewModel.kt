@@ -1,10 +1,8 @@
 package be.opsteven.composeretrofitposttest
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import be.opsteven.composeretrofitposttest.data.Product
+import be.opsteven.composeretrofitposttest.data.ProductenUIState
 import be.opsteven.composeretrofitposttest.data.ResponseState
 import be.opsteven.composeretrofitposttest.data.User
 import be.opsteven.composeretrofitposttest.network.MyApi
@@ -23,15 +21,9 @@ class MainViewModel : ViewModel() {
     )
     val responseState: StateFlow<ResponseState> = _responseState.asStateFlow()
 
-    private val _producten = MutableStateFlow<MutableList<Product>>(mutableListOf())
-    val producten = _producten.asStateFlow()
+    private val _productenUIState = MutableStateFlow(ProductenUIState())
+    val productenUIState = _productenUIState.asStateFlow()
 
-
-
-
-    fun getProducten(){
-        _getProducts()
-    }
 
     /**
      * Haal de producten uit de lijst van de API
@@ -39,35 +31,39 @@ class MainViewModel : ViewModel() {
      * producten verwijderd hebben. In dat geval voeg je best nieuwe producten toe als je met
      * hetzelfde endpoint werkt.
      */
-    private fun _getProducts() {
+    fun getProducten() {
         viewModelScope.launch {
-            val productenResponse = MyApi.retroFitService.getProducten()
-
-            // verwijder alle vorige Producten en zet de nieuwe in _producten
-            _producten.value.clear()
-            _producten.value.addAll(productenResponse.data)
-
-            _responseState.update { currentState ->
-                currentState.copy(
-                    productenResponse = productenResponse.data.size.toString(),
-                    output = productenResponse.toString()
+            _productenUIState.update {
+                it.copy(
+                    data = listOf() // niet nodig, maar doen we om iets visueel te testen bij het laden
                 )
             }
+            val productenResponse = MyApi.retroFitService.getProducten()
 
+            if(productenResponse.status in 200..299 && !productenResponse.data.isEmpty()) {
+                // verwijder alle vorige Producten en zet de nieuwe in _productenUIState
+                _productenUIState.update {
+                    it.copy(
+                        data = productenResponse.data
+                    )
+                }
 
+                // de output aanpassen (voor het bovenste deel)
+                _responseState.update { currentState ->
+                    currentState.copy(
+                        productenResponse = productenResponse.data.size.toString(),
+                        output = productenResponse.toString()
+                    )
+                }
+            }
 
         }
     }
 
     fun login() {
-        _login()
-    }
-
-
-    private fun _login() {
          viewModelScope.launch {
              val myUser = User("test", "test")
-            val loginResult = MyApi.retroFitService.login(myUser)
+             val loginResult = MyApi.retroFitService.login(myUser)
 
              _responseState.update { currentState ->
                  currentState.copy(
