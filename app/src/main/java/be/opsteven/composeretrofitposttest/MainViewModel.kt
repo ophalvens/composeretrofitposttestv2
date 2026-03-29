@@ -62,6 +62,7 @@ class MainViewModel : ViewModel() {
 
     fun login() {
          viewModelScope.launch {
+             // voeg hier je eigen user toe
              val myUser = User("test", "test")
              val loginResult = MyApi.retroFitService.login(myUser)
 
