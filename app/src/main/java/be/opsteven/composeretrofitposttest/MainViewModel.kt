@@ -47,6 +47,7 @@ class MainViewModel : ViewModel() {
             _producten.value.clear()
             _producten.value.addAll(productenResponse.data)
 
+            // de output aanpassen (voor het bovenste deel)
             _responseState.update { currentState ->
                 currentState.copy(
                     productenResponse = productenResponse.data.size.toString(),
@@ -67,7 +68,7 @@ class MainViewModel : ViewModel() {
     private fun _login() {
          viewModelScope.launch {
              val myUser = User("test", "test")
-            val loginResult = MyApi.retroFitService.login(myUser)
+             val loginResult = MyApi.retroFitService.login(myUser)
 
              _responseState.update { currentState ->
                  currentState.copy(

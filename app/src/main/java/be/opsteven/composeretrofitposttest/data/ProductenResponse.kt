@@ -26,3 +26,5 @@ data class Product (
     @SerialName("CT_OM")
     val categorie: String
 )
+
+
