@@ -27,4 +27,6 @@ data class Product (
     val categorie: String
 )
 
-
+data class ProductenUIState(
+    val data: List<Product> = listOf()
+)

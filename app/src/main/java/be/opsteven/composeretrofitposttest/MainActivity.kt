@@ -3,6 +3,7 @@ package be.opsteven.composeretrofitposttest
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -20,33 +21,31 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import be.opsteven.composeretrofitposttest.ui.theme.ComposeRetrofitPostTestTheme
-
 import androidx.lifecycle.viewmodel.compose.viewModel
 import be.opsteven.composeretrofitposttest.data.Product
+import be.opsteven.composeretrofitposttest.ui.theme.ComposeRetrofitPostTestTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         setContent {
             ComposeRetrofitPostTestTheme {
                 // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    TestPostApp()
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    TestPostApp(modifier = Modifier.padding(innerPadding))
                 }
+
             }
         }
     }
@@ -105,9 +104,10 @@ fun TestPostApp(
     modifier: Modifier = Modifier
 ) {
     val responseState by viewModel.responseState.collectAsState()
-    val producten by viewModel.producten.collectAsState()
+    val productenUIState by viewModel.productenUIState.collectAsState()
 
-    Column(){
+
+    Column(modifier = modifier){
         OutputArea(
             response = responseState.output,
             modifier = Modifier
@@ -115,8 +115,10 @@ fun TestPostApp(
                 .weight(1f)
         )
 
-        ProductCardList(producten = producten, paddingValues = PaddingValues(all = 8.dp), modifier = Modifier.weight(5f))
+        if(productenUIState.data.isEmpty())
+            EmptyProductCard(paddingValues = PaddingValues(all = 8.dp), modifier = Modifier.weight(5f))
 
+        ProductCardList(producten = productenUIState.data, paddingValues = PaddingValues(all = 8.dp), modifier = Modifier.weight(5f))
         ButtonsRow(
             onLoginClicked = { viewModel.login() },
             onGetProductenClicked = { viewModel.getProducten() } ,
@@ -168,19 +170,19 @@ fun ProductCard(
             .weight(2f)
             .height(24.dp)
             .background(MaterialTheme.colorScheme.primaryContainer)
-            .padding(start=8.dp, end = 8.dp)
+            .padding(start = 8.dp, end = 8.dp)
         )
         Text(text = product.naam, modifier = Modifier
             .weight(4f)
             .height(24.dp)
             .background(MaterialTheme.colorScheme.tertiaryContainer)
-            .padding(start=8.dp, end = 8.dp)
+            .padding(start = 8.dp, end = 8.dp)
         )
         Text(text = product.prijs.toString(), modifier = Modifier
             .weight(1f)
             .height(24.dp)
             .background(MaterialTheme.colorScheme.primaryContainer)
-            .padding(start=8.dp, end = 8.dp)
+            .padding(start = 8.dp, end = 8.dp)
         )
     }
 }
@@ -196,8 +198,35 @@ fun ProductCardPreview() {
     }
 }
 
+@Composable
+fun EmptyProductCard(
+    paddingValues: PaddingValues,
+    modifier: Modifier = Modifier
+){
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(paddingValues)
+    ){
+        Text(
+            text = stringResource(R.string.no_products_fetched_yet),
+            textAlign = TextAlign.Center,
+            modifier = modifier
+                .weight(1f)
+                .height(24.dp)
+                .background(MaterialTheme.colorScheme.primaryContainer)
+                .padding(start = 8.dp, end = 8.dp)
+        )
+    }
+}
 
-
+@Preview
+@Composable
+fun EmptyProductCardPreview() {
+    ComposeRetrofitPostTestTheme {
+        EmptyProductCard(paddingValues = PaddingValues(all = 8.dp))
+    }
+}
 
 @Preview(
     showBackground = true,
