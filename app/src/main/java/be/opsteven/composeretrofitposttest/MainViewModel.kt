@@ -1,5 +1,6 @@
 package be.opsteven.composeretrofitposttest
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import be.opsteven.composeretrofitposttest.data.ProductenUIState
@@ -38,24 +39,29 @@ class MainViewModel : ViewModel() {
                     data = listOf() // niet nodig, maar doen we om iets visueel te testen bij het laden
                 )
             }
-            val productenResponse = MyApi.retroFitService.getProducten()
+            try {
+                val productenResponse = MyApi.retroFitService.getProducten()
 
-            if(productenResponse.status in 200..299 && !productenResponse.data.isEmpty()) {
-                // verwijder alle vorige Producten en zet de nieuwe in _productenUIState
-                _productenUIState.update {
-                    it.copy(
-                        data = productenResponse.data
-                    )
-                }
+                if(productenResponse.status in 200..299 && !productenResponse.data.isEmpty()) {
+                    // zet de nieuwe Producten in _productenUIState
+                    _productenUIState.update {
+                        it.copy(
+                            data = productenResponse.data
+                        )
+                    }
 
-                // de output aanpassen (voor het bovenste deel)
-                _responseState.update { currentState ->
-                    currentState.copy(
-                        productenResponse = productenResponse.data.size.toString(),
-                        output = productenResponse.toString()
-                    )
+                    // de output aanpassen (voor het bovenste deel)
+                    _responseState.update { currentState ->
+                        currentState.copy(
+                            productenResponse = productenResponse.data.size.toString(),
+                            output = productenResponse.toString()
+                        )
+                    }
                 }
+            } catch(e: Exception) {
+                Log.e("getProducten", e.toString())
             }
+
 
         }
     }
