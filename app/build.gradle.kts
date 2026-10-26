@@ -2,7 +2,6 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.androidApplication)
-    alias(libs.plugins.jetbrainsKotlinAndroid)
     // serialization plugin
     id("org.jetbrains.kotlin.plugin.serialization") version "2.3.20"
     alias(libs.plugins.kotlinCompose)
