@@ -15,7 +15,7 @@ kotlin {
 }
 android {
     namespace = "be.opsteven.composeretrofitposttest"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "be.opsteven.composeretrofitposttest"
