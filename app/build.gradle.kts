@@ -2,9 +2,8 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.androidApplication)
-    alias(libs.plugins.jetbrainsKotlinAndroid)
     // serialization plugin
-    id("org.jetbrains.kotlin.plugin.serialization") version "2.3.20"
+    id("org.jetbrains.kotlin.plugin.serialization") version "2.4.21"
     alias(libs.plugins.kotlinCompose)
 }
 
@@ -15,12 +14,12 @@ kotlin {
 }
 android {
     namespace = "be.opsteven.composeretrofitposttest"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "be.opsteven.composeretrofitposttest"
         minSdk = 24
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 1
         versionName = "1.0"
 
@@ -43,17 +42,11 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    //kotlinOptions {
-    //    jvmTarget = "1.8"
-    //}
-
 
     buildFeatures {
         compose = true
     }
-   // composeOptions {
-   //     kotlinCompilerExtensionVersion = "1.7.0"
-   // }
+
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
